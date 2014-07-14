@@ -1,0 +1,76 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.springkorea.project.crud.dao.CrudDao">
+	
+	<insert id="insertBoard" parameterType="hashmap">
+		<selectKey keyProperty="boardNo" resultType="int" order="BEFORE">
+			SELECT
+				IFNULL(MAX(BOARD_NO),0) + 1
+			FROM
+				BOARD
+			WHERE
+				BOARD_NAME = #{boardName}
+		</selectKey>
+		INSERT INTO BOARD
+		( 
+			  BOARD_NAME
+			, BOARD_NO
+			, TITLE
+			, CONTENTS
+			, DEL_YN
+			, REG_DATE
+			, REG_USER
+			, MOD_DATE
+			, MOD_USER
+		)
+		VALUES
+		( 
+			#{boardName}
+			, #{boardNo}
+			, #{title}
+			, #{content}
+			, 'N'
+			, CURRENT_TIMESTAMP
+			, 'regUser'
+			, CURRENT_TIMESTAMP
+			, 'modUser'
+		)
+	</insert>
+	
+	<select id="selectAjaxBoard" parameterType="hashmap" resultType="hashmap">
+		SELECT /* ajaxBoard.selectAjaxBoard */
+			  A.BOARD_NO
+			, A.TITLE
+			, A.CONTENTS
+			, TO_CHAR(A.REG_DATE, 'YYYY-MM-DD') AS REG_DATE
+			, A.REG_USER
+		FROM 
+			BOARD A
+		WHERE
+			A.BOARD_NAME = #{boardName}
+			AND A.BOARD_NO = #{boardNo}
+			AND A.DEL_YN = 'N'
+	</select>
+	
+	<update id="updateAjaxBoard" parameterType="hashmap">
+		UPDATE
+			BOARD
+		SET
+			TITLE = #{title}
+			, CONTENTS = #{contents}
+		WHERE
+			BOARD_NAME = #{boardName}
+			AND BOARD_NO = #{boardNo}
+	</update>
+	
+	<delete id="deleteAjaxBoard" parameterType="hashmap">
+		DELETE
+		FROM
+			BOARD
+		WHERE
+			BOARD_NAME = #{boardName}
+			AND BOARD_NO = #{boardNo}
+	</delete>
+</mapper>

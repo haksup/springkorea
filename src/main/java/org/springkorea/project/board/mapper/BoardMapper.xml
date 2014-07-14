@@ -1,0 +1,45 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.springkorea.project.board.dao.BoardDao">
+	
+	<sql id="boardColumns">
+		  BOARD_NAME
+		, BOARD_NO
+		, TITLE
+		, CONTENTS
+		, REPLY_GROUP
+		, REPLY_STEP
+		, REPLY_DEPTH
+		, FILE_GROUP
+		, DATE_FORMAT(REG_DATE, '%Y-%m-%d') AS REG_DATE
+		, REG_USER
+		, DATE_FORMAT(MOD_DATE, '%Y-%m-%d') AS MOD_DATE
+		, MOD_USER
+	</sql>
+	
+	<select id="selectListBoard" parameterType="hashmap" resultType="hashmap">
+		SELECT /* selectListBoard */
+			  <include refid="boardColumns"/>
+		FROM 
+			BOARD
+		WHERE
+			BOARD_NAME = #{boardName}
+		ORDER BY
+			BOARD_NAME ASC
+			, BOARD_NO DESC
+		LIMIT
+			#{startRow, typeHandler=mapperIntCastUtil}, #{blockCount, typeHandler=mapperIntCastUtil}
+	</select>
+	
+	<select id="selectListBoardCount" parameterType="hashmap" resultType="int">
+		SELECT	/* selectListBoardCount */
+			COUNT(*) AS CNT
+		FROM
+			BOARD
+		WHERE
+			BOARD_NAME = #{boardName}
+	</select>
+	
+</mapper>
