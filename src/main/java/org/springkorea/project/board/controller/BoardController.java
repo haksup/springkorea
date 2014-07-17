@@ -21,6 +21,7 @@ public class BoardController extends CommonUtil{
 	
 	@RequestMapping("/boardView")
 	public ModelAndView board() throws Exception {
+		System.out.println("aaa");
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("board/board");
 		return mav;

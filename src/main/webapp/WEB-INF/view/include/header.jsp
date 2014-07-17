@@ -10,6 +10,7 @@ function getContextPath(){
 
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery/jquery-2.1.1.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery/jquery.form.js"></script>
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/jquery/jquery.json-2.4.js"></script>
 <!-- bootstrap(S) -->
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap/bootstrap.js"></script>
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap/affix.js"></script>

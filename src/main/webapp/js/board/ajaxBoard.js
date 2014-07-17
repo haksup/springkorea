@@ -28,6 +28,7 @@ var $element;
 	
 	callAjaxBoard = function(options) {
 		var url = options.boardName;
+		options.startRow = (options.currentPage - 1) * options.blockCount;
 		
 		$.ajax({
 			url: url,
@@ -68,7 +69,7 @@ var $element;
 	
 	// 게시판 사용자 옵션별 화면 그리기
 	boardSetting = function(options, result){
-		var board = "<div>";
+		var board = "<div style='text-align:center;'>";
 		
 		// 기본 게시판
 		board += drawBoad(options, result);
@@ -136,7 +137,7 @@ var $element;
 			options.currentPage = options.totalPage;
 		}
 		
-		var startPage = options.currentPage;
+		var startPage =  Math.floor((options.currentPage - 1) / options.blockPage) * options.blockPage + 1;
 		var endPage = startPage + options.blockPage - 1;
 		
 		// 마지막 페이지가 전체 페이지 수보다 크면 전체 페이지 수로 설정
@@ -144,35 +145,46 @@ var $element;
 			endPage = totalPage;
 		}
 		
+		var pagingOptions = options;
+		var toJsonOption;
+		
 		var paging =	"<div>";
 		if (options.currentPage > options.blockPage) {
-			paging +=	"<a href='callAjaxBoard(" + options + ")'>처음</a>";
-			paging +=	"<a>이전</a>";
+			pagingOptions.currentPage = 1;
+			toJsonOption = $.toJSON(pagingOptions);
+			paging +=	"<a href='#' onclick='callAjaxBoard(" + toJsonOption + ");'>처음</a>&nbsp;";
+			
+			pagingOptions.currentPage = startPage - 1;
+			toJsonOption = $.toJSON(pagingOptions);
+			paging +=	"<a href='#' onclick='callAjaxBoard(" + toJsonOption + ");'>이전</a>&nbsp;";
 		}
-//		for (var i = startPage; i <= endPage; i++) {
-//			if (i > totalPage) {
-//				break;
-//			}
-//			if (i == options.currentPage) {
-//				paging +=	"&nbsp;<b>";
-//				paging += i;
-//				paging += "</b>";
-//			} else {
-//				paging +=	"&nbsp;<a>";
-//				paging += i;
-//				paging += "</a>";
-//			}
-//		}
-//		if (totalPage - startPage >= options.blockPage) {
-//			paging +=	"<a" + (endPage + 1) + ">";
-//			paging +=	"다음";
-//			paging +=	"</a>";
-//			paging +=	"&nbsp;<a>";
-//			paging +=	"끝";
-//			paging +=	"</a>";
-//		}
+		for (var i = startPage; i <= endPage; i++) {
+			if (i > totalPage) {
+				break;
+			}
+			alert("1 " + options.currentPage);
+			if (i == options.currentPage) {
+				alert("2 " + options.currentPage);
+				paging +=	"<b>" + i + "</b>&nbsp";
+				alert("3 " + options.currentPage);
+			} else {
+				alert("4 " + options.currentPage);
+				pagingOptions.currentPage = i;
+				toJsonOption = $.toJSON(pagingOptions);
+				paging +=	"<a href='#' onclick='callAjaxBoard(" + toJsonOption + ");'>" + i + "</a>&nbsp;";
+				alert("5 " + options.currentPage);
+			}
+		}
+		if (totalPage - startPage >= options.blockPage) {
+			pagingOptions.currentPage = endPage + 1;
+			toJsonOption = $.toJSON(pagingOptions);
+			paging +=	"<a href='#' onclick='callAjaxBoard(" + toJsonOption + ");'>다음</a>&nbsp;";
+			
+			pagingOptions.currentPage = totalPage;
+			toJsonOption = $.toJSON(pagingOptions);
+			paging +=	"<a href='#' onclick='callAjaxBoard(" + toJsonOption + ");'>끝</a>";
+		}
 		paging +=		"</div>";
-		alert(paging);
 		return paging;
 	};
 	
