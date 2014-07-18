@@ -5,16 +5,18 @@
 var userOprion = {
 		boardName		: 'board'			// 게시판명
 		, currentPage	: 1				// 현재 페이지
-		, blockCount	: 10			// 한 페이지의  게시물의 수
+		, blockCount	: 5			// 한 페이지의  게시물의 수
 		, blockPage		: 10			// 한 화면에 보여줄 페이지 수
 		, paging		: 'number'		// number, scroll, no 세가지 옵션
 };
-var $element;
+var $element = new Array();	// 게시판 대상 저장
 
 (function($) {
 	
 	$.fn.ajaxBoard = function(opts) {
-		$element = $(this);
+		var targetSavePoint = $element.length;
+		opts.targetSavePoint = targetSavePoint;
+		$element[targetSavePoint] = $(this);	// 저장 대상을 배열에 저장한다.
 		
 		setOption(opts);
 		var options = $.extend($.fn.ajaxBoard.defaults, opts);
@@ -38,7 +40,7 @@ var $element;
 			datatype: 'json',
 			success : function(result){
 				var board = boardSetting(options, result);
-				$element.html(board);
+				$element[options.targetSavePoint].html(board);
 			},
 			error : function(){
 				alert("에러가 발생하였습니다.");
