@@ -145,43 +145,37 @@ var $element;
 			endPage = totalPage;
 		}
 		
-		var pagingOptions = options;
 		var toJsonOption;
-		
+		var currentPage = options.currentPage;
 		var paging =	"<div>";
 		if (options.currentPage > options.blockPage) {
-			pagingOptions.currentPage = 1;
-			toJsonOption = $.toJSON(pagingOptions);
+			options.currentPage = 1;
+			toJsonOption = $.toJSON(options);
 			paging +=	"<a href='#' onclick='callAjaxBoard(" + toJsonOption + ");'>처음</a>&nbsp;";
 			
-			pagingOptions.currentPage = startPage - 1;
-			toJsonOption = $.toJSON(pagingOptions);
+			options.currentPage = startPage - 1;
+			toJsonOption = $.toJSON(options);
 			paging +=	"<a href='#' onclick='callAjaxBoard(" + toJsonOption + ");'>이전</a>&nbsp;";
 		}
 		for (var i = startPage; i <= endPage; i++) {
 			if (i > totalPage) {
 				break;
 			}
-			alert("1 " + options.currentPage);
-			if (i == options.currentPage) {
-				alert("2 " + options.currentPage);
+			if (i == currentPage) {
 				paging +=	"<b>" + i + "</b>&nbsp";
-				alert("3 " + options.currentPage);
 			} else {
-				alert("4 " + options.currentPage);
-				pagingOptions.currentPage = i;
-				toJsonOption = $.toJSON(pagingOptions);
+				options.currentPage = i;
+				toJsonOption = $.toJSON(options);
 				paging +=	"<a href='#' onclick='callAjaxBoard(" + toJsonOption + ");'>" + i + "</a>&nbsp;";
-				alert("5 " + options.currentPage);
 			}
 		}
 		if (totalPage - startPage >= options.blockPage) {
-			pagingOptions.currentPage = endPage + 1;
-			toJsonOption = $.toJSON(pagingOptions);
+			options.currentPage = endPage + 1;
+			toJsonOption = $.toJSON(options);
 			paging +=	"<a href='#' onclick='callAjaxBoard(" + toJsonOption + ");'>다음</a>&nbsp;";
 			
-			pagingOptions.currentPage = totalPage;
-			toJsonOption = $.toJSON(pagingOptions);
+			options.currentPage = totalPage;
+			toJsonOption = $.toJSON(options);
 			paging +=	"<a href='#' onclick='callAjaxBoard(" + toJsonOption + ");'>끝</a>";
 		}
 		paging +=		"</div>";
