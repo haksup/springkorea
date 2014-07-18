@@ -17,6 +17,10 @@ jQuery(document).ready(function(){
 		boardName : 'notice'
 		, currentPage : 1
 	});
+	$('#divTest2').ajaxBoard({
+		boardName : 'notice'
+		, currentPage : 1
+	});
 	
 });
 </script>
@@ -29,9 +33,7 @@ jQuery(document).ready(function(){
 		<h3>게시판 <small>Board</small></h3>
 	</div>
 	
-	<div id="divTest"></div>
-	
-	<div style="padding: 20px 0 0 0;">
+	<div style="padding: 0px 0 0 0;">
 		<form id="board-form" class="form-horizontal">
 			<div class="form-group">
 		    	<label for="title" class="col-sm-1 control-label">Title</label>
@@ -55,6 +57,8 @@ jQuery(document).ready(function(){
 		  	</div>
 		</form>
 	</div>
+	<div id="divTest"></div>
+	<div id="divTest2"></div>
 </div>
 </body>
 </html>
