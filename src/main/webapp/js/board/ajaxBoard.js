@@ -17,9 +17,11 @@ var $element = new Array();	// 게시판 대상 저장
 		var targetSavePoint = $element.length;
 		opts.targetSavePoint = targetSavePoint;
 		$element[targetSavePoint] = $(this);	// 저장 대상을 배열에 저장한다.
+
+		setOption(opts);						// 사용자 옵션 체크 후 기본값이 아닌것을 확인한다.
+		var options = $.extend($.fn.ajaxBoard.defaults, opts);	// 사용자 옵션과 기본 옵션을 하나로 합친다.
 		
-		setOption(opts);
-		var options = $.extend($.fn.ajaxBoard.defaults, opts);
+		//authorManager();							// 권한을 설정한다. - 차후 업데이트
 		callAjaxBoard(options);
 	};
 
@@ -28,6 +30,7 @@ var $element = new Array();	// 게시판 대상 저장
 			, startRow : 0		// 시작 rownumber
 	};
 	
+	// 리스트 게시판 호출
 	callAjaxBoard = function(options) {
 		var url = options.boardName;
 		options.startRow = (options.currentPage - 1) * options.blockCount;
@@ -72,6 +75,10 @@ var $element = new Array();	// 게시판 대상 저장
 	// 게시판 사용자 옵션별 화면 그리기
 	boardSetting = function(options, result){
 		var board = "<div style='text-align:center;'>";
+
+		// 게시판 세부화면(CRUD) 화면(S)
+		board += drawBoardDetail(options);
+		// 게시판 세부화면(CRUD) 화면(E)
 		
 		// 기본 게시판
 		board += drawBoad(options, result);
@@ -87,6 +94,36 @@ var $element = new Array();	// 게시판 대상 저장
 		board += "</div>";
 
 		return board;
+	};
+	
+	// 게시판 세부화면(CRUD) 화면
+	drawBoardDetail = function(options){
+		var detail = "<div style='padding: 0px 0 0 0;'>";
+		detail 	  += "	<form id='boardForm" + options.targetSavePoint+ "' name='board-form' class='form-horizontal'>";
+		detail 	  += "		<div class='form-group'>";
+		detail 	  += "			<label for='title' class='col-sm-1 control-label'>Title</label>";
+		detail 	  += "			<div class='col-sm-11'>";
+		detail 	  += "				<input type='text' class='form-control' name='title' />";
+		detail 	  += "			</div>";
+		detail 	  += "		</div>";
+		detail 	  += "		<div class='form-group'>";
+		detail 	  += "			<label for='Content' class='col-sm-1 control-label'>Content</label>";
+		detail 	  += "			<div class='col-sm-11'>";
+		detail 	  += "				<textarea class='form-control' name='content' rows='5'></textarea>";
+		detail 	  += "			</div>";
+		detail 	  += "		</div>";
+		detail 	  += "		<div class='form-group'>";
+		detail 	  += "			<div class='col-sm-offset-1 col-sm-11 text-right'>";
+		detail 	  += "				<input type='button' name='reply' class='btn btn-default' value='Reply' />";
+		detail 	  += "				<input type='button' name='save' class='btn btn-default' value='Save' />";
+		detail 	  += "				<input type='button' name='modify' class='btn btn-default' value='Modify' />";
+		detail 	  += "				<input type='button' name='delete' class='btn btn-default' value='Delete' />";
+		detail 	  += "			</div>";
+		detail 	  += "		</div>";
+		detail 	  += "	</form>";
+		detail 	  += "</div>";
+		
+		return detail;
 	};
 	
 	// 게시판 리스트
@@ -183,5 +220,8 @@ var $element = new Array();	// 게시판 대상 저장
 		paging +=		"</div>";
 		return paging;
 	};
+	
+	
+
 	
 })(jQuery);
