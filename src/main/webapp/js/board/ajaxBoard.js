@@ -98,6 +98,7 @@ var $element = new Array();	// 게시판 대상 저장
 	
 	// 게시판 세부화면(CRUD) 화면
 	drawBoardDetail = function(options){
+		
 		var detail = "<div style='padding: 0px 0 0 0;'>";
 		detail 	  += "	<form id='boardForm" + options.targetSavePoint+ "' name='board-form' class='form-horizontal'>";
 		detail 	  += "		<div class='form-group'>";
@@ -114,10 +115,10 @@ var $element = new Array();	// 게시판 대상 저장
 		detail 	  += "		</div>";
 		detail 	  += "		<div class='form-group'>";
 		detail 	  += "			<div class='col-sm-offset-1 col-sm-11 text-right'>";
-		detail 	  += "				<input type='button' name='reply' class='btn btn-default' value='Reply' />";
-		detail 	  += "				<input type='button' name='save' class='btn btn-default' value='Save' />";
-		detail 	  += "				<input type='button' name='modify' class='btn btn-default' value='Modify' />";
-		detail 	  += "				<input type='button' name='delete' class='btn btn-default' value='Delete' />";
+		detail 	  += "				<input type='button' name='reply' class='btn btn-default' value='Reply' onclick='boardReply(\"boardForm" + options.targetSavePoint + "\")' />";
+		detail 	  += "				<input type='button' name='save' class='btn btn-default' value='Save' onclick='boardSave(\"boardForm" + options.targetSavePoint + "\")' />";
+		detail 	  += "				<input type='button' name='modify' class='btn btn-default' value='Modify' onclick='boardModify(\"boardForm" + options.targetSavePoint + "\")' />";
+		detail 	  += "				<input type='button' name='delete' class='btn btn-default' value='Delete' onclick='boardDelete(\"boardForm" + options.targetSavePoint + "\")' />";
 		detail 	  += "			</div>";
 		detail 	  += "		</div>";
 		detail 	  += "	</form>";
@@ -130,8 +131,9 @@ var $element = new Array();	// 게시판 대상 저장
 	drawBoad = function(options, result){
 		var rownum = options.currentPage == 1 ? result.listBoardCount + 1 : result.listBoardCount - options.blockCount * (options.currentPage - 1) + 1;
 		var listBoard = result.listBoard;
-		
-		var board = "<div>";
+
+		var board = "<div class='col-xs-pull-12 text-right'><input type='button' name='write' class='btn btn-default' value='Write' onclick='boardWrite(\"boardForm" + options.targetSavePoint + "\")' /></div>";
+		board += "<div>";
 		board +=	"	<table class='table table-bordered'>";
 		board +=	"	<colgroup>";
 		board +=	"		<col width='5%'>";
@@ -221,6 +223,13 @@ var $element = new Array();	// 게시판 대상 저장
 		return paging;
 	};
 	
+	boardWrite = function(boardId){
+		alert(boardId);
+	};
+	
+	boardSave = function(boardId){
+		
+	};
 	
 
 	
