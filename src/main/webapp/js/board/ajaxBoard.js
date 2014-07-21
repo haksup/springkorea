@@ -99,8 +99,8 @@ var $element = new Array();	// 게시판 대상 저장
 	// 게시판 세부화면(CRUD) 화면
 	drawBoardDetail = function(options){
 		
-		var detail = "<div style='padding: 0px 0 0 0;'>";
-		detail 	  += "	<form id='boardForm" + options.targetSavePoint+ "' name='board-form' class='form-horizontal'>";
+		var detail = "<div id='boardDiv" + options.targetSavePoint + "' style='padding: 0px 0 0 0; display:none;'>";
+		detail 	  += "	<form id='boardForm" + options.targetSavePoint + "' name='board-form' class='form-horizontal'>";
 		detail 	  += "		<div class='form-group'>";
 		detail 	  += "			<label for='title' class='col-sm-1 control-label'>Title</label>";
 		detail 	  += "			<div class='col-sm-11'>";
@@ -132,7 +132,9 @@ var $element = new Array();	// 게시판 대상 저장
 		var rownum = options.currentPage == 1 ? result.listBoardCount + 1 : result.listBoardCount - options.blockCount * (options.currentPage - 1) + 1;
 		var listBoard = result.listBoard;
 
-		var board = "<div class='col-xs-pull-12 text-right'><input type='button' name='write' class='btn btn-default' value='Write' onclick='boardWrite(\"boardForm" + options.targetSavePoint + "\")' /></div>";
+		var board = "<div id='writeBtnDiv" + options.targetSavePoint + "' class='col-xs-pull-12 text-right'>" +
+				"<input type='button' name='write' class='btn btn-default' value='Write' " +
+				"onclick='boardWrite(\"boardDiv" + options.targetSavePoint + "\", \"writeBtnDiv" + options.targetSavePoint + "\")' /></div>";
 		board += "<div>";
 		board +=	"	<table class='table table-bordered'>";
 		board +=	"	<colgroup>";
@@ -223,8 +225,10 @@ var $element = new Array();	// 게시판 대상 저장
 		return paging;
 	};
 	
-	boardWrite = function(boardId){
-		alert(boardId);
+	// 새글 작성
+	boardWrite = function(boardDivId, boardBtnId){
+		$('#' + boardDivId).show();
+		$('#' + boardBtnId).hide();
 	};
 	
 	boardSave = function(boardId){
