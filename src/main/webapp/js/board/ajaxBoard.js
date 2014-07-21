@@ -98,7 +98,7 @@ var $element = new Array();	// 게시판 대상 저장
 	
 	// 게시판 세부화면(CRUD) 화면
 	drawBoardDetail = function(options){
-		
+		var paramOptions =  $.toJSON(options);
 		var detail = "<div id='boardDiv" + options.targetSavePoint + "' style='padding: 0px 0 0 0; display:none;'>";
 		detail 	  += "	<form id='boardForm" + options.targetSavePoint + "' name='board-form' class='form-horizontal'>";
 		detail 	  += "		<div class='form-group'>";
@@ -116,7 +116,7 @@ var $element = new Array();	// 게시판 대상 저장
 		detail 	  += "		<div class='form-group'>";
 		detail 	  += "			<div class='col-sm-offset-1 col-sm-11 text-right'>";
 		detail 	  += "				<input type='button' name='reply' class='btn btn-default' value='Reply' onclick='boardReply(\"boardForm" + options.targetSavePoint + "\")' />";
-		detail 	  += "				<input type='button' name='save' class='btn btn-default' value='Save' onclick='boardSave(\"boardForm" + options.targetSavePoint + "\")' />";
+		detail 	  += "				<input type='button' name='save' class='btn btn-default' value='Save' onclick='boardSave(\"boardForm" + options.targetSavePoint + "\", " + paramOptions + ")' />";
 		detail 	  += "				<input type='button' name='modify' class='btn btn-default' value='Modify' onclick='boardModify(\"boardForm" + options.targetSavePoint + "\")' />";
 		detail 	  += "				<input type='button' name='delete' class='btn btn-default' value='Delete' onclick='boardDelete(\"boardForm" + options.targetSavePoint + "\")' />";
 		detail 	  += "			</div>";
@@ -227,12 +227,28 @@ var $element = new Array();	// 게시판 대상 저장
 	
 	// 새글 작성
 	boardWrite = function(boardDivId, boardBtnId){
-		$('#' + boardDivId).show();
-		$('#' + boardBtnId).hide();
+		$('#' + boardDivId).show();						// 입력form show
+		$('#' + boardDivId + " [name=reply]").hide();	// 답글 버튼 hide
+		$('#' + boardDivId + " [name=modify]").hide();	// 수정 버튼 hide
+		$('#' + boardDivId + " [name=delete]").hide();	// 삭제 버튼 hide
+		$('#' + boardBtnId).hide();						// 새글 버튼 hide
 	};
 	
-	boardSave = function(boardId){
-		
+	// 게시판 저장
+	boardSave = function(boardId, options){
+		var url = options.boardName;
+
+		$("#" + boardId).ajaxSubmit({
+			url : url + "/insert",
+			type: "POST",
+			dataType: "html",
+			success: function(data) {
+				alert("저장");
+			},
+			error : function(){
+				alert("정보를 저장 하지 못했습니다.");
+			}
+		});
 	};
 	
 

@@ -21,7 +21,6 @@ public class BoardController extends CommonUtil{
 	
 	@RequestMapping("/boardView")
 	public ModelAndView board() throws Exception {
-		System.out.println("aaa");
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("board/board");
 		return mav;
@@ -29,7 +28,7 @@ public class BoardController extends CommonUtil{
 	
 	@RequestMapping(value = "/{boardNm}", method = RequestMethod.GET)
 	@ResponseBody
-	public HashMap<String, Object> selectListBoard(@RequestParam HashMap<String,Object> hashMap ){
+	public HashMap<String, Object> selectListBoard(@RequestParam HashMap<String,Object> hashMap){
 		List<?> listBoard = boardService.selectListBoard(hashMap);
 		int listBoardCount = boardService.selectListBoardCount(hashMap);
 		
@@ -38,5 +37,9 @@ public class BoardController extends CommonUtil{
 		resultMap.put("listBoardCount", listBoardCount);
 		
 		return resultMap;
+	}
+	
+	@RequestMapping(value = "/{boardNm}/insert", method = RequestMethod.POST)
+	public void insertBoard(@RequestParam HashMap<String,Object> hashMap){
 	}
 }
