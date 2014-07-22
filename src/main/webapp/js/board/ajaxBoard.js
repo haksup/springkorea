@@ -77,7 +77,18 @@ var $element = new Array();	// 게시판 대상 저장
 		var board = "<div style='text-align:center;'>";
 
 		// 게시판 세부화면(CRUD) 화면(S)
-		board += drawBoardDetail(options);
+		if(options.mode == "C"){
+			board += drawBoardDetail(options);
+		}
+		else if(options.mode == "R"){
+			board += drawBoardDetail(options);
+		}
+		else if(options.mode == "U"){
+			board += drawBoardDetail(options);
+		}
+		else if(options.mode == "D"){
+			board += drawBoardDetail(options);
+		}
 		// 게시판 세부화면(CRUD) 화면(E)
 		
 		// 기본 게시판
@@ -108,9 +119,9 @@ var $element = new Array();	// 게시판 대상 저장
 		detail 	  += "			</div>";
 		detail 	  += "		</div>";
 		detail 	  += "		<div class='form-group'>";
-		detail 	  += "			<label for='Content' class='col-sm-1 control-label'>Content</label>";
+		detail 	  += "			<label for='Contents' class='col-sm-1 control-label'>Contents</label>";
 		detail 	  += "			<div class='col-sm-11'>";
-		detail 	  += "				<textarea class='form-control' name='content' rows='5'></textarea>";
+		detail 	  += "				<textarea class='form-control' name='contents' rows='5'></textarea>";
 		detail 	  += "			</div>";
 		detail 	  += "		</div>";
 		detail 	  += "		<div class='form-group'>";
@@ -237,13 +248,16 @@ var $element = new Array();	// 게시판 대상 저장
 	// 게시판 저장
 	boardSave = function(boardId, options){
 		var url = options.boardName;
-
+		
 		$("#" + boardId).ajaxSubmit({
 			url : url + "/insert",
+			data : options,
 			type: "POST",
 			dataType: "html",
 			success: function(data) {
-				alert("저장");
+				alert("저장되었습니다.");
+				options.mode = "R";
+				callAjaxBoard(options);
 			},
 			error : function(){
 				alert("정보를 저장 하지 못했습니다.");

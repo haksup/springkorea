@@ -25,8 +25,7 @@ public class BoardServiceImpl implements BoardService {
 	
 	@Override
 	public int insertBoard(HashMap<String, Object> hashMap) {
-		// TODO Auto-generated method stub
-		return 0;
+		return boardDao.insertBoard(hashMap);
 	}
 
 	@Override

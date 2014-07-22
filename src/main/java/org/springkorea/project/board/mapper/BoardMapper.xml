@@ -42,4 +42,40 @@
 			BOARD_NAME = #{boardName}
 	</select>
 	
+	<insert id="insertBoard" parameterType="hashmap">
+		<selectKey keyProperty="boardNo" resultType="int" order="BEFORE">
+			SELECT
+				IFNULL(MAX(BOARD_NO),0) + 1
+			FROM
+				BOARD
+			WHERE
+				BOARD_NAME = #{boardName}
+		</selectKey>
+		
+		INSERT INTO BOARD
+		(
+			BOARD_NAME
+			, BOARD_NO
+			, TITLE
+			, CONTENTS
+			, REPLY_GROUP
+			, REPLY_STEP
+			, REPLY_DEPTH
+			, FILE_GROUP
+			, REG_USER
+			, MOD_USER
+		)
+		VALUES(
+			#{boardName}
+			, #{boardNo}
+			, #{title}
+			, #{contents}
+			, 0
+			, 0
+			, 0
+			, 0
+			, 'REG_USER'
+			, 'MOD_USER'
+		)
+	</insert>
 </mapper>
