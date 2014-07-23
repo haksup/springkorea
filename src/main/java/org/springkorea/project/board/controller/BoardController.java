@@ -44,10 +44,16 @@ public class BoardController extends CommonUtil{
 		return resultMap;
 	}
 	
-	@RequestMapping(value = "/{boardNm}/insert", method = RequestMethod.POST)
+	@RequestMapping(value = "/{boardNm}/create", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
-	public void insertBoard(HttpServletRequest request){
+	public void createBoard(HttpServletRequest request){
 		HashMap<String, Object> hashMap = mapBind(request);
 		boardService.insertBoard(hashMap);
+	}
+
+	@RequestMapping(value = "/{boardNm}/retrieve", method = RequestMethod.GET)
+	@ResponseStatus(HttpStatus.OK)
+	public void retrieveBoard(@RequestParam HashMap<String,Object> hashMap){
+		boardService.selectDetailBoard(hashMap);
 	}
 }

@@ -78,4 +78,14 @@
 			, 'MOD_USER'
 		)
 	</insert>
+	
+	<select id="selectDetailBoard" parameterType="hashmap" resultType="hashmap">
+		SELECT /* selectDetailBoard */
+			  <include refid="boardColumns"/>
+		FROM 
+			BOARD
+		WHERE
+				BOARD_NAME = #{boardName}
+			AND BOARD_NO = #{boardNo, typeHandler=mapperIntCastUtil}
+	</select>
 </mapper>

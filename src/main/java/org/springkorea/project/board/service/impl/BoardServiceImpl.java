@@ -29,6 +29,11 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
+	public HashMap<String, Object> selectDetailBoard(HashMap<String, Object> hashMap) {
+		return boardDao.selectDetailBoard(hashMap);
+	}
+	
+	@Override
 	public int updateBoard(HashMap<String, Object> hashMap) {
 		// TODO Auto-generated method stub
 		return 0;
@@ -39,5 +44,6 @@ public class BoardServiceImpl implements BoardService {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	
 }

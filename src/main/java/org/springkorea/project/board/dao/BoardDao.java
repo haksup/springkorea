@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface BoardDao {
 	public List<?> selectListBoard(HashMap<String, Object> hashMap);
 	public int selectListBoardCount(HashMap<String, Object> hashMap);
+	public HashMap<String, Object> selectDetailBoard(HashMap<String, Object> hashMap);
 	public int insertBoard(HashMap<String, Object> hashMap);
 	public int updateBoard(HashMap<String, Object> hashMap);
 	public int deleteBoard(HashMap<String, Object> hashMap);
