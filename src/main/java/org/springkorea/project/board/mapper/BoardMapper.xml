@@ -5,18 +5,18 @@
 <mapper namespace="org.springkorea.project.board.dao.BoardDao">
 	
 	<sql id="boardColumns">
-		  BOARD_NAME
-		, BOARD_NO
-		, TITLE
-		, CONTENTS
-		, REPLY_GROUP
-		, REPLY_STEP
-		, REPLY_DEPTH
-		, FILE_GROUP
-		, DATE_FORMAT(REG_DATE, '%Y-%m-%d') AS REG_DATE
-		, REG_USER
-		, DATE_FORMAT(MOD_DATE, '%Y-%m-%d') AS MOD_DATE
-		, MOD_USER
+		  BOARD_NAME AS boardName
+		, BOARD_NO AS boardNo
+		, TITLE AS title
+		, CONTENTS AS contents
+		, REPLY_GROUP AS replyGroup
+		, REPLY_STEP AS replyStep
+		, REPLY_DEPTH AS replyDepth
+		, FILE_GROUP AS fileGroup
+		, DATE_FORMAT(REG_DATE, '%Y-%m-%d') AS regDate
+		, REG_USER AS regUser
+		, DATE_FORMAT(MOD_DATE, '%Y-%m-%d') AS modDate
+		, MOD_USER modUser
 	</sql>
 	
 	<select id="selectListBoard" parameterType="hashmap" resultType="hashmap">

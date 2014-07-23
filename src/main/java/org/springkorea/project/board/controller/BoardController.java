@@ -53,7 +53,17 @@ public class BoardController extends CommonUtil{
 
 	@RequestMapping(value = "/{boardNm}/retrieve", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
-	public void retrieveBoard(@RequestParam HashMap<String,Object> hashMap){
-		boardService.selectDetailBoard(hashMap);
+	@ResponseBody
+	public HashMap<String, Object> retrieveBoard(@RequestParam HashMap<String,Object> hashMap){
+		List<?> listBoard = boardService.selectListBoard(hashMap);
+		HashMap<String, Object> retrieveMap = boardService.selectDetailBoard(hashMap);
+		int listBoardCount = boardService.selectListBoardCount(hashMap);
+		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("listBoard", listBoard);
+		resultMap.put("retrieveMap", retrieveMap);
+		resultMap.put("listBoardCount", listBoardCount);
+		
+		return resultMap;
 	}
 }

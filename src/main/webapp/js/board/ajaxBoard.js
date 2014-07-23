@@ -90,7 +90,7 @@ var $element = new Array();	// 게시판 대상 저장
 			board += drawBoardCUDetail(options, result);
 		}
 		// 게시판 세부화면(CRUD) 화면(E)
-		
+
 		// 기본 게시판
 		board += drawBoad(options, result);
 
@@ -110,7 +110,7 @@ var $element = new Array();	// 게시판 대상 저장
 	// 게시판 세부화면(CRUD - C, U) 화면
 	drawBoardCUDetail = function(options, result){
 		var paramOptions =  $.toJSON(options);
-		var detail = "<div id='boardDiv" + options.targetSavePoint + "' style='padding: 0px 0 0 0; display:none;'>";
+		var detail = "<div id='boardCUDiv" + options.targetSavePoint + "' style='padding: 0px 0 0 0; display:none;'>";
 		detail 	  += "	<form id='boardForm" + options.targetSavePoint + "' name='board-form' class='form-horizontal'>";
 		detail 	  += "		<div class='form-group'>";
 		detail 	  += "			<label for='title' class='col-sm-1 control-label'>Title</label>";
@@ -141,18 +141,20 @@ var $element = new Array();	// 게시판 대상 저장
 	// 게시판 세부화면(CRUD - R, D) 화면
 	drawBoardRDDetail = function(options, result){
 		var paramOptions =  $.toJSON(options);
-		var detail = "<div id='boardDiv" + options.targetSavePoint + "' style='padding: 0px 0 0 0;'>";
+		var detailInfo = result.retrieveMap;
+
+		var detail = "<div id='boardRDDiv" + options.targetSavePoint + "' style='padding: 0px 0 0 0;'>";
 		detail 	  += "	<form id='boardForm" + options.targetSavePoint + "' name='board-form' class='form-horizontal'>";
 		detail 	  += "		<div class='form-group'>";
 		detail 	  += "			<label for='title' class='col-sm-1 control-label'>Title</label>";
 		detail 	  += "			<div class='col-sm-11'>";
-		detail 	  += result.TITLE;
+		detail 	  += detailInfo.title;
 		detail 	  += "			</div>";
 		detail 	  += "		</div>";
 		detail 	  += "		<div class='form-group'>";
 		detail 	  += "			<label for='Contents' class='col-sm-1 control-label'>Contents</label>";
 		detail 	  += "			<div class='col-sm-11'>";
-		detail 	  += result.CONTENTS;
+		detail 	  += detailInfo.contents;
 		detail 	  += "			</div>";
 		detail 	  += "		</div>";
 		detail 	  += "		<div class='form-group'>";
@@ -173,10 +175,10 @@ var $element = new Array();	// 게시판 대상 저장
 	drawBoad = function(options, result){
 		var rownum = options.currentPage == 1 ? result.listBoardCount + 1 : result.listBoardCount - options.blockCount * (options.currentPage - 1) + 1;
 		var listBoard = result.listBoard;
-		
+
 		var board = "<div id='writeBtnDiv" + options.targetSavePoint + "' class='col-xs-pull-12 text-right'>" +
 				"<input type='button' name='write' class='btn btn-default' value='Write' " +
-				"onclick='boardWrite(\"boardDiv" + options.targetSavePoint + "\", \"writeBtnDiv" + options.targetSavePoint + "\")' /></div>";
+				"onclick='boardWrite(\"boardCUDiv" + options.targetSavePoint + "\", \"writeBtnDiv" + options.targetSavePoint + "\")' /></div>";
 		board += "<div>";
 		board +=	"	<table class='table table-bordered'>";
 		board +=	"	<colgroup>";
@@ -199,9 +201,9 @@ var $element = new Array();	// 게시판 대상 저장
 			for(var i = 0; i < listBoard.length; i++){
 				board += "<tr>";
 				board += "	<td class='text-center'>" + (rownum =rownum - 1) + "</td>";
-				board += "	<td class='text-left'><a onclick='boardRead(" + $.toJSON(options) + ")' style='cursor:pointer;'>" + listBoard[i].TITLE + "</a></td>";
-				board += "	<td class='text-center'>" + listBoard[i].REG_DATE + "</td>";
-				board += "	<td class='text-center'>" + listBoard[i].REG_USER + "</td>";
+				board += "	<td class='text-left'><a onclick='boardRead(" + $.toJSON(options) + "," + listBoard[i].boardNo + ")' style='cursor:pointer;'>" + listBoard[i].title + "</a></td>";
+				board += "	<td class='text-center'>" + listBoard[i].regDate + "</td>";
+				board += "	<td class='text-center'>" + listBoard[i].regUser + "</td>";
 				board += "</tr>";
 			}
 		}
@@ -297,17 +299,19 @@ var $element = new Array();	// 게시판 대상 저장
 	};
 	
 	// 게시판 읽기
-	boardRead = function(options){
+	boardRead = function(options, boardNo){
 		var url = options.boardName;
-		alert(options.boardNo);
+		var data = options;
+		data.boardNo = boardNo;
+
 		$.ajax({
 			url: url + "/retrieve",
 			type: 'GET',
-			data : options,
+			data : data,
 			async : false,
 			datatype: 'json',
 			success : function(result){
-				options.mode = "D";
+				options.mode = "R";
 				var board = boardSetting(options, result);
 				$element[options.targetSavePoint].html(board);
 			},
