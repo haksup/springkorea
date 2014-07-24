@@ -1,14 +1,6 @@
 /**
  * 게시판 호출
  */
-// 사용자변경 옵션
-var userOprion = {
-		boardName		: 'board'			// 게시판명
-		, currentPage	: 1				// 현재 페이지
-		, blockCount	: 5			// 한 페이지의  게시물의 수
-		, blockPage		: 10			// 한 화면에 보여줄 페이지 수
-		, paging		: 'number'		// number, scroll, no 세가지 옵션
-};
 var $element = new Array();	// 게시판 대상 저장
 
 (function($) {
@@ -18,13 +10,20 @@ var $element = new Array();	// 게시판 대상 저장
 		opts.targetSavePoint = targetSavePoint;
 		$element[targetSavePoint] = $(this);	// 저장 대상을 배열에 저장한다.
 
-		setOption(opts);						// 사용자 옵션 체크 후 기본값이 아닌것을 확인한다.
-		var options = $.extend($.fn.ajaxBoard.defaults, opts);	// 사용자 옵션과 기본 옵션을 하나로 합친다.
-		
+		var options = $.extend($.fn.ajaxBoard.defaults, $.fn.ajaxBoard.userOprion, opts);	// 사용자 옵션과 기본 옵션을 하나로 합친다.
+
 		//authorManager();							// 권한을 설정한다. - 차후 업데이트
 		callAjaxBoard(options);
 	};
-
+	
+	$.fn.ajaxBoard.userOprion = {	// 게시판의 기본 옵션
+			boardName		: 'board'			// 게시판명
+			, currentPage	: 1				// 현재 페이지
+			, blockCount	: 5			// 한 페이지의  게시물의 수
+			, blockPage		: 10			// 한 화면에 보여줄 페이지 수
+			, paging		: 'number'		// number, scroll, no 세가지 옵션
+	};
+	
 	$.fn.ajaxBoard.defaults = {	// 게시판의 기본 옵션
 			totalCount	: 0		// 전체 로우수
 			, startRow : 0		// 시작 rownumber
@@ -49,26 +48,6 @@ var $element = new Array();	// 게시판 대상 저장
 				alert("에러가 발생하였습니다.");
 			}
 			
-		});
-	};
-	
-	// 사용자 옵션 세팅
-	setOption = function(options){
-		var bool = false;
-		
-		jQuery.each(userOprion, function(userOprionKey, userOprionValue){
-			jQuery.each(options, function(optionsKey, optionsValue){
-				if(userOprionKey == optionsKey){
-					bool = false;
-					return false;		// break
-				}
-				bool = true;
-			});
-
-			if(bool == true){
-				options[userOprionKey] = userOprionValue;
-				bool = false;
-			}
 		});
 	};
 	
