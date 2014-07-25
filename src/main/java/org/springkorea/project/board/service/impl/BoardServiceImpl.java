@@ -35,14 +35,12 @@ public class BoardServiceImpl implements BoardService {
 	
 	@Override
 	public int updateBoard(HashMap<String, Object> hashMap) {
-		// TODO Auto-generated method stub
-		return 0;
+		return boardDao.updateBoard(hashMap);
 	}
 
 	@Override
 	public int deleteBoard(HashMap<String, Object> hashMap) {
-		// TODO Auto-generated method stub
-		return 0;
+		return boardDao.deleteBoard(hashMap);
 	}
 
 	

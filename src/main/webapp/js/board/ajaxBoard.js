@@ -1,23 +1,24 @@
 /**
  * 게시판 호출
  */
-var $element = new Array();	// 게시판 대상 저장
-
 (function($) {
+	var $element = new Array();	// 게시판 대상 저장
+	var boardDetailHtml = "";		// 게시판 세부 html
+	var boardListHtml = "";			// 게시판 리스트 html
 	
-	$.fn.ajaxBoard = function(opts) {
+	$.fn.ajaxBoard = function(userOption) {
 		var targetSavePoint = $element.length;
-		opts.targetSavePoint = targetSavePoint;
+		userOption.targetSavePoint = targetSavePoint;
 		$element[targetSavePoint] = $(this);	// 저장 대상을 배열에 저장한다.
 
-		var options = $.extend($.fn.ajaxBoard.defaults, $.fn.ajaxBoard.userOprion, opts);	// 사용자 옵션과 기본 옵션을 하나로 합친다.
+		var options = $.extend($.fn.ajaxBoard.defaults, $.fn.ajaxBoard.userOprion, userOption);	// 사용자 옵션과 기본 옵션을 하나로 합친다.
 
 		//authorManager();							// 권한을 설정한다. - 차후 업데이트
 		callAjaxBoard(options);
 	};
 	
-	$.fn.ajaxBoard.userOprion = {	// 게시판의 기본 옵션
-			boardName		: 'board'			// 게시판명
+	$.fn.ajaxBoard.userOprion = {	// 게시판의 사용자 옵션
+			boardName		: ''			// 게시판명
 			, currentPage	: 1				// 현재 페이지
 			, blockCount	: 5			// 한 페이지의  게시물의 수
 			, blockPage		: 10			// 한 화면에 보여줄 페이지 수
@@ -27,6 +28,8 @@ var $element = new Array();	// 게시판 대상 저장
 	$.fn.ajaxBoard.defaults = {	// 게시판의 기본 옵션
 			totalCount	: 0		// 전체 로우수
 			, startRow : 0		// 시작 rownumber
+			, drowMode : 'L'	// 변경 이벤트 화면(C:create, R:retrieve, U:update, D:delete, L:List)
+			, boardNo : 0		// 게시물 번호(pk)
 	};
 	
 	// 리스트 게시판 호출
@@ -41,8 +44,8 @@ var $element = new Array();	// 게시판 대상 저장
 			async : false,
 			datatype: 'json',
 			success : function(result){
-				var board = boardSetting(options, result);
-				$element[options.targetSavePoint].html(board);
+				options.drowMode = 'L';
+				drawBoard(options, result);
 			},
 			error : function(){
 				alert("에러가 발생하였습니다.");
@@ -51,24 +54,27 @@ var $element = new Array();	// 게시판 대상 저장
 		});
 	};
 	
-	// 게시판 사용자 옵션별 화면 그리기
-	boardSetting = function(options, result){
-		var board = "<div style='text-align:center;'>";
+	// 필요한 부분만 데이터를 새로 만든다.
+	drawBoard = function(options, result){
+		var board = "";
 
-		// 게시판 세부화면(CRUD) 화면(S)
-		if(options.mode == "R"){
-			board += drawBoardRDDetail(options, result);
-		}
-//		else if(options.mode == "U"){
-//			board += drawBoardDetail(options);
-//		}
-//		else if(options.mode == "D"){
-//			board += drawBoardDetail(options);
-//		}
-		else{
+		if(options.drowMode == 'L'){
+			board += boardDetailHtml;
+			board += drawBoardList(options, result);
+		}else if(options.drowMode == 'C' || options.drowMode == 'U'){
 			board += drawBoardCUDetail(options, result);
+//			board += boardListHtml;
+		}else if(options.drowMode == 'R'){
+			board += drawBoardRDDetail(options, result);
+			board += boardListHtml;
 		}
-		// 게시판 세부화면(CRUD) 화면(E)
+
+		$element[options.targetSavePoint].html(board);
+	};
+	
+	// 게시판 사용자 옵션별 화면 그리기
+	drawBoardList = function(options, result){
+		var board = "<div style='text-align:center;'>";
 
 		// 기본 게시판
 		board += drawBoad(options, result);
@@ -82,72 +88,10 @@ var $element = new Array();	// 게시판 대상 저장
 		// 페이징 옵션(E)
 		
 		board += "</div>";
-
+		
+		boardListHtml = board;
+		
 		return board;
-	};
-	
-	// 게시판 세부화면(CRUD - C, U) 화면
-	drawBoardCUDetail = function(options, result){
-		var paramOptions =  $.toJSON(options);
-		var detail = "<div id='boardCUDiv" + options.targetSavePoint + "' style='padding: 0px 0 0 0; display:none;'>";
-		detail 	  += "	<form id='boardForm" + options.targetSavePoint + "' name='board-form' class='form-horizontal'>";
-		detail 	  += "		<div class='form-group'>";
-		detail 	  += "			<label for='title' class='col-sm-1 control-label'>Title</label>";
-		detail 	  += "			<div class='col-sm-11'>";
-		detail 	  += "				<input type='text' class='form-control' name='title' />";
-		detail 	  += "			</div>";
-		detail 	  += "		</div>";
-		detail 	  += "		<div class='form-group'>";
-		detail 	  += "			<label for='Contents' class='col-sm-1 control-label'>Contents</label>";
-		detail 	  += "			<div class='col-sm-11'>";
-		detail 	  += "				<textarea class='form-control' name='contents' rows='5'></textarea>";
-		detail 	  += "			</div>";
-		detail 	  += "		</div>";
-		detail 	  += "		<div class='form-group'>";
-		detail 	  += "			<div class='col-sm-offset-1 col-sm-11 text-right'>";
-		detail 	  += "				<input type='button' name='reply' class='btn btn-default' value='Reply' onclick='boardReply(\"boardForm" + options.targetSavePoint + "\")' />";
-		detail 	  += "				<input type='button' name='save' class='btn btn-default' value='Save' onclick='boardSave(\"boardForm" + options.targetSavePoint + "\", " + paramOptions + ")' />";
-		detail 	  += "				<input type='button' name='modify' class='btn btn-default' value='Modify' onclick='boardModify(\"boardForm" + options.targetSavePoint + "\")' />";
-		detail 	  += "				<input type='button' name='delete' class='btn btn-default' value='Delete' onclick='boardDelete(\"boardForm" + options.targetSavePoint + "\")' />";
-		detail 	  += "			</div>";
-		detail 	  += "		</div>";
-		detail 	  += "	</form>";
-		detail 	  += "</div>";
-		
-		return detail;
-	};
-	
-	// 게시판 세부화면(CRUD - R, D) 화면
-	drawBoardRDDetail = function(options, result){
-		var paramOptions =  $.toJSON(options);
-		var detailInfo = result.retrieveMap;
-
-		var detail = "<div id='boardRDDiv" + options.targetSavePoint + "' style='padding: 0px 0 0 0;'>";
-		detail 	  += "	<form id='boardForm" + options.targetSavePoint + "' name='board-form' class='form-horizontal'>";
-		detail 	  += "		<div class='form-group'>";
-		detail 	  += "			<label for='title' class='col-sm-1 control-label'>Title</label>";
-		detail 	  += "			<div class='col-sm-11'>";
-		detail 	  += detailInfo.title;
-		detail 	  += "			</div>";
-		detail 	  += "		</div>";
-		detail 	  += "		<div class='form-group'>";
-		detail 	  += "			<label for='Contents' class='col-sm-1 control-label'>Contents</label>";
-		detail 	  += "			<div class='col-sm-11'>";
-		detail 	  += detailInfo.contents;
-		detail 	  += "			</div>";
-		detail 	  += "		</div>";
-		detail 	  += "		<div class='form-group'>";
-		detail 	  += "			<div class='col-sm-offset-1 col-sm-11 text-right'>";
-		detail 	  += "				<input type='button' name='reply' class='btn btn-default' value='Reply' onclick='boardReply(\"boardForm" + options.targetSavePoint + "\")' />";
-		detail 	  += "				<input type='button' name='save' class='btn btn-default' value='Save' onclick='boardSave(\"boardForm" + options.targetSavePoint + "\", " + paramOptions + ")' />";
-		detail 	  += "				<input type='button' name='modify' class='btn btn-default' value='Modify' onclick='boardModify(\"boardForm" + options.targetSavePoint + "\")' />";
-		detail 	  += "				<input type='button' name='delete' class='btn btn-default' value='Delete' onclick='boardDelete(\"boardForm" + options.targetSavePoint + "\")' />";
-		detail 	  += "			</div>";
-		detail 	  += "		</div>";
-		detail 	  += "	</form>";
-		detail 	  += "</div>";
-		
-		return detail;
 	};
 	
 	// 게시판 리스트
@@ -157,7 +101,7 @@ var $element = new Array();	// 게시판 대상 저장
 
 		var board = "<div id='writeBtnDiv" + options.targetSavePoint + "' class='col-xs-pull-12 text-right'>" +
 				"<input type='button' name='write' class='btn btn-default' value='Write' " +
-				"onclick='boardWrite(\"boardCUDiv" + options.targetSavePoint + "\", \"writeBtnDiv" + options.targetSavePoint + "\")' /></div>";
+				"onclick='boardWrite(" + $.toJSON(options) + ")' /></div>";
 		board += "<div>";
 		board +=	"	<table class='table table-bordered'>";
 		board +=	"	<colgroup>";
@@ -248,13 +192,93 @@ var $element = new Array();	// 게시판 대상 저장
 		return paging;
 	};
 	
+	/***********************************/
+	
+	// 게시판 세부화면(CRUD - C, U) 화면
+	drawBoardCUDetail = function(options, result){
+		var paramOptions =  $.toJSON(options);
+		var detailInfo = {	// create, update 를 같이 사용하기 위해 초기화 해준다.
+			title : ''
+			, contents : ''
+		};
+		if(result != ""){
+			detailInfo = result.retrieveMap;
+		}
+		
+		var detail = "<div id='boardCUDiv" + options.targetSavePoint + "' style='padding: 0px 0 0 0;'>";
+		detail 	  += "	<form id='boardForm" + options.targetSavePoint + "' name='board-form' class='form-horizontal'>";
+		detail 	  += "		<div class='form-group'>";
+		detail 	  += "			<label for='title' class='col-sm-1 control-label'>Title</label>";
+		detail 	  += "			<div class='col-sm-11'>";
+		detail 	  += "				<input type='text' class='form-control' name='title' value='" + detailInfo.title + "' />";
+		detail 	  += "			</div>";
+		detail 	  += "		</div>";
+		detail 	  += "		<div class='form-group'>";
+		detail 	  += "			<label for='Contents' class='col-sm-1 control-label'>Contents</label>";
+		detail 	  += "			<div class='col-sm-11'>";
+		detail 	  += "				<textarea class='form-control' name='contents' rows='5'>" +  detailInfo.contents + "</textarea>";
+		detail 	  += "			</div>";
+		detail 	  += "		</div>";
+		detail 	  += "		<div class='form-group'>";
+		detail 	  += "			<div class='col-sm-offset-1 col-sm-11 text-right'>";
+		if(options.drowMode == "C"){
+			detail 	  += "				<input type='button' name='save' class='btn btn-default' value='Save' onclick='boardSave(\"boardForm" + options.targetSavePoint + "\", " + paramOptions + ")' />";
+			detail 	  += "				<input type='button' name='cancel' class='btn btn-default' value='Cancel' onclick='boardCancel(" + paramOptions + ")' />";
+		}
+		if(options.drowMode == "U"){
+			detail 	  += "				<input type='button' name='save' class='btn btn-default' value='Save' onclick='boardModifySave(\"boardForm" + options.targetSavePoint + "\", " + paramOptions + ")' />";
+			detail 	  += "				<input type='button' name='cancel' class='btn btn-default' value='Cancel' onclick='boardModifyCancel(" + paramOptions + ")' />";
+		}
+		detail 	  += "			</div>";
+		detail 	  += "		</div>";
+		detail 	  += "	</form>";
+		detail 	  += "</div>";
+		
+		if(options.drowMode == "C"){
+			boardDetailHtml = "";
+		}else if(options.drowMode == "U"){
+			boardDetailHtml = detail;
+		}
+		
+		return detail;
+	};
+	
+	// 게시판 세부화면(CRUD - R, D) 화면
+	drawBoardRDDetail = function(options, result){
+		var detailInfo = result.retrieveMap;
+
+		var detail = "<div id='boardRDDiv" + options.targetSavePoint + "' style='padding: 0px 0 0 0;'>";
+		detail 	  += "	<form id='boardForm" + options.targetSavePoint + "' name='board-form' class='form-horizontal'>";
+		detail 	  += "		<div class='form-group'>";
+		detail 	  += "			<label for='title' class='col-sm-1 control-label'>Title</label>";
+		detail 	  += "			<div class='col-sm-11'>";
+		detail 	  += 				detailInfo.title;
+		detail 	  += "			</div>";
+		detail 	  += "		</div>";
+		detail 	  += "		<div class='form-group'>";
+		detail 	  += "			<label for='Contents' class='col-sm-1 control-label'>Contents</label>";
+		detail 	  += "			<div class='col-sm-11'>";
+		detail 	  += 				detailInfo.contents;
+		detail 	  += "			</div>";
+		detail 	  += "		</div>";
+		detail 	  += "		<div class='form-group'>";
+		detail 	  += "			<div class='col-sm-offset-1 col-sm-11 text-right'>";
+		detail 	  += "				<input type='button' name='modify' class='btn btn-default' value='Modify' onclick='boardModify(" + $.toJSON(options) + ")' />";
+		detail 	  += "				<input type='button' name='delete' class='btn btn-default' value='Delete' onclick='boardDelete(" + $.toJSON(options) + ")' />";
+		detail 	  += "			</div>";
+		detail 	  += "		</div>";
+		detail 	  += "	</form>";
+		detail 	  += "</div>";
+		
+		boardDetailHtml = detail;
+		
+		return detail;
+	};
+	
 	// 새글 작성
-	boardWrite = function(boardDivId, boardBtnId){
-		$('#' + boardDivId).show();						// 입력form show
-		$('#' + boardDivId + " [name=reply]").hide();	// 답글 버튼 hide
-		$('#' + boardDivId + " [name=modify]").hide();	// 수정 버튼 hide
-		$('#' + boardDivId + " [name=delete]").hide();	// 삭제 버튼 hide
-		$('#' + boardBtnId).hide();						// 새글 버튼 hide
+	boardWrite = function(options){
+		options.drowMode = 'C';
+		drawBoard(options, '');
 	};
 	
 	// 게시판 저장
@@ -268,7 +292,6 @@ var $element = new Array();	// 게시판 대상 저장
 			dataType: "html",
 			success: function(data) {
 				alert("저장되었습니다.");
-				options.mode = "R";
 				callAjaxBoard(options);
 			},
 			error : function(){
@@ -277,22 +300,26 @@ var $element = new Array();	// 게시판 대상 저장
 		});
 	};
 	
+	// 새글 취소
+	boardCancel = function(options){
+		options.currentPage = 1;
+		callAjaxBoard(options);
+	};
+	
 	// 게시판 읽기
 	boardRead = function(options, boardNo){
 		var url = options.boardName;
-		var data = options;
-		data.boardNo = boardNo;
+		options.boardNo = boardNo;
 
 		$.ajax({
 			url: url + "/retrieve",
 			type: 'GET',
-			data : data,
+			data : options,
 			async : false,
 			datatype: 'json',
 			success : function(result){
-				options.mode = "R";
-				var board = boardSetting(options, result);
-				$element[options.targetSavePoint].html(board);
+				options.drowMode = "R";
+				drawBoard(options, result);
 			},
 			error : function(){
 				alert("에러가 발생하였습니다.");
@@ -301,6 +328,68 @@ var $element = new Array();	// 게시판 대상 저장
 		});
 	};
 	
+	// 게시판 수정
+	boardModify = function(options){
+		var url = options.boardName;
+		$.ajax({
+			url: url + "/retrieve",
+			type: 'GET',
+			data : options,
+			async : false,
+			datatype: 'json',
+			success : function(result){
+				options.drowMode = 'U';
+				drawBoard(options, result);
+			},
+			error : function(){
+				alert("에러가 발생하였습니다.");
+			}
+			
+		});
+	};
+	
+	// 수정글 취소
+	boardModifyCancel = function(options){
+		boardRead(options, options.boardNo);
+	};
+	
+	// 수정글 저장
+	boardModifySave = function(boardId, options){
+		var url = options.boardName;
+		$("#" + boardId).ajaxSubmit({
+			url : url + "/modify",
+			data : options,
+			type: "POST",
+			dataType: "html",
+			success: function(data) {
+				alert("수정되었습니다.");
+				boardRead(options, options.boardNo);
+			},
+			error : function(){
+				alert("정보를 수정 하지 못했습니다.");
+			}
+		});
+	};
+	
+	// 게시글 삭제
+	boardDelete = function(options){
+		var url = options.boardName;
 
+		$.ajax({
+			url: url + "/" + options.boardNo + "/delete",
+			type: 'DELETE',
+			data : options,
+			async : false,
+			datatype: 'json',
+			success : function(result){
+				alert("삭제되었습니다.");
+				callAjaxBoard(options);
+			},
+			error : function(){
+				alert("에러가 발생하였습니다.");
+			}
+			
+		});
+	};
 	
 })(jQuery);

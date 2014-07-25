@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,7 +32,7 @@ public class BoardController extends CommonUtil{
 		return mav;
 	}
 	
-	@RequestMapping(value = "/{boardNm}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{boardName}", method = RequestMethod.GET)
 	@ResponseBody
 	public HashMap<String, Object> selectListBoard(@RequestParam HashMap<String,Object> hashMap){
 		List<?> listBoard = boardService.selectListBoard(hashMap);
@@ -44,26 +45,38 @@ public class BoardController extends CommonUtil{
 		return resultMap;
 	}
 	
-	@RequestMapping(value = "/{boardNm}/create", method = RequestMethod.POST)
+	@RequestMapping(value = "/{boardName}/create", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.OK)
 	public void createBoard(HttpServletRequest request){
 		HashMap<String, Object> hashMap = mapBind(request);
 		boardService.insertBoard(hashMap);
 	}
 
-	@RequestMapping(value = "/{boardNm}/retrieve", method = RequestMethod.GET)
+	@RequestMapping(value = "/{boardName}/retrieve", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
 	@ResponseBody
 	public HashMap<String, Object> retrieveBoard(@RequestParam HashMap<String,Object> hashMap){
-		List<?> listBoard = boardService.selectListBoard(hashMap);
 		HashMap<String, Object> retrieveMap = boardService.selectDetailBoard(hashMap);
-		int listBoardCount = boardService.selectListBoardCount(hashMap);
 		
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap.put("listBoard", listBoard);
 		resultMap.put("retrieveMap", retrieveMap);
-		resultMap.put("listBoardCount", listBoardCount);
 		
 		return resultMap;
+	}
+	
+	@RequestMapping(value = "/{boardName}/modify", method = RequestMethod.POST)	// put
+	@ResponseStatus(HttpStatus.OK)
+	public void modifyBoard(HttpServletRequest request){
+		HashMap<String, Object> hashMap = mapBind(request);
+		boardService.updateBoard(hashMap);
+	}
+
+	@RequestMapping(value = "/{boardName}/{boardNo}/delete", method = RequestMethod.DELETE)
+	@ResponseStatus(HttpStatus.OK)
+	public void deleteBoard(@PathVariable("boardName") String boardName, @PathVariable("boardNo") int boardNo){
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
+		hashMap.put("boardName", boardName);
+		hashMap.put("boardNo", boardNo);
+		boardService.deleteBoard(hashMap);
 	}
 }

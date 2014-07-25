@@ -88,4 +88,22 @@
 				BOARD_NAME = #{boardName}
 			AND BOARD_NO = #{boardNo, typeHandler=mapperIntCastUtil}
 	</select>
+	
+	<update id="updateBoard" parameterType="hashmap">
+		UPDATE
+			BOARD
+		SET
+			  TITLE = #{title}
+			, CONTENTS = #{contents}
+		WHERE
+				BOARD_NAME = #{boardName}
+			AND BOARD_NO = #{boardNo, typeHandler=mapperIntCastUtil}
+	</update>
+
+	<delete id="deleteBoard" parameterType="hashmap">
+		DELETE FROM BOARD
+		WHERE
+				BOARD_NAME = #{boardName}
+			AND BOARD_NO = #{boardNo}
+	</delete>
 </mapper>
