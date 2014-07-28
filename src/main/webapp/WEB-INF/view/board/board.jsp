@@ -15,11 +15,9 @@ jQuery(document).ready(function(){
 	
 	$('#divTest').ajaxBoard({
 		boardName : 'notice'
-		, currentPage : 1
 	});
 	$('#divTest2').ajaxBoard({
 		boardName : 'notice'
-		, currentPage : 1
 	});
 	
 });
