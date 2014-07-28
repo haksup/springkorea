@@ -17,10 +17,10 @@ jQuery(document).ready(function(){
 		boardName : 'notice'
 		, currentPage : 1
 	});
-// 	$('#divTest2').ajaxBoard({
-// 		boardName : 'notice'
-// 		, currentPage : 1
-// 	});
+	$('#divTest2').ajaxBoard({
+		boardName : 'notice'
+		, currentPage : 1
+	});
 	
 });
 </script>
@@ -34,6 +34,9 @@ jQuery(document).ready(function(){
 		<h3>게시판 <small>Board</small></h3>
 	</div>
 	<div id="divTest"></div>
+	<div>
+		<h3>게시판 <small>Board</small></h3>
+	</div>
 	<div id="divTest2"></div>
 </div>
 </body>
