@@ -14,10 +14,12 @@
 jQuery(document).ready(function(){
 	
 	$('#divTest').ajaxBoard({
-		boardName : 'notice'
+		boardName : 'notice',
+		blockCount : 5
 	});
 	$('#divTest2').ajaxBoard({
-		boardName : 'notice'
+		boardName : 'notice',
+		blockCount : 5
 	});
 	
 });

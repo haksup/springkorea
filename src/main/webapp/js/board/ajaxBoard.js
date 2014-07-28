@@ -17,7 +17,7 @@
 	$.fn.ajaxBoard.userOprion = {	// 게시판의 사용자 옵션
 			boardName		: ''			// 게시판명
 			, currentPage	: 1				// 현재 페이지
-			, blockCount	: 5			// 한 페이지의  게시물의 수
+			, blockCount	: 10			// 한 페이지의  게시물의 수
 			, blockPage		: 10			// 한 화면에 보여줄 페이지 수
 			, paging		: 'number'		// number, scroll, no 옵션
 	};
