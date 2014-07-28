@@ -3,8 +3,6 @@
  */
 (function($) {
 	var $element = new Array();	// 게시판 대상 저장
-	var boardDetailHtml = "";		// 게시판 세부 html
-	var boardListHtml = "";			// 게시판 리스트 html
 	
 	$.fn.ajaxBoard = function(userOption) {
 		var targetSavePoint = $element.length;
@@ -13,8 +11,7 @@
 
 		var options = $.extend($.fn.ajaxBoard.defaults, $.fn.ajaxBoard.userOprion, userOption);	// 사용자 옵션과 기본 옵션을 하나로 합친다.
 
-		//authorManager();							// 권한을 설정한다. - 차후 업데이트
-		callAjaxBoard(options);
+		drowBoard(options);
 	};
 	
 	$.fn.ajaxBoard.userOprion = {	// 게시판의 사용자 옵션
@@ -22,7 +19,7 @@
 			, currentPage	: 1				// 현재 페이지
 			, blockCount	: 5			// 한 페이지의  게시물의 수
 			, blockPage		: 10			// 한 화면에 보여줄 페이지 수
-			, paging		: 'number'		// number, scroll, no 세가지 옵션
+			, paging		: 'number'		// number, scroll, no 옵션
 	};
 	
 	$.fn.ajaxBoard.defaults = {	// 게시판의 기본 옵션
@@ -32,11 +29,29 @@
 			, boardNo : 0		// 게시물 번호(pk)
 	};
 	
-	// 리스트 게시판 호출
+	// 필요한 부분만 데이터를 새로 만든다.
+	drowBoard = function(options){
+		var board = "";
+
+		if(options.drowMode == 'L'){
+			board += drowBoardList(options, callAjaxBoard(options));
+		}else if(options.drowMode == 'C'){
+			board += drowBoardCUDetail(options, '');
+		}else if(options.drowMode == 'U'){
+			board += drowBoardCUDetail(options, callBoardDetail(options));
+		}else if(options.drowMode == 'R'){
+			board += drowBoardRDDetail(options, callBoardDetail(options));
+			board += drowBoardList(options, callAjaxBoard(options));
+		}
+
+		$element[options.targetSavePoint].html(board);
+	};
+	
+	// 게시판 리스트 호출
 	callAjaxBoard = function(options) {
 		var url = options.boardName;
 		options.startRow = (options.currentPage - 1) * options.blockCount;
-		
+		var returnResult = "";
 		$.ajax({
 			url: url,
 			type: 'GET',
@@ -44,40 +59,22 @@
 			async : false,
 			datatype: 'json',
 			success : function(result){
-				options.drowMode = 'L';
-				drawBoard(options, result);
+				returnResult = result;
 			},
 			error : function(){
 				alert("에러가 발생하였습니다.");
 			}
-			
 		});
-	};
-	
-	// 필요한 부분만 데이터를 새로 만든다.
-	drawBoard = function(options, result){
-		var board = "";
-
-		if(options.drowMode == 'L'){
-			board += boardDetailHtml;
-			board += drawBoardList(options, result);
-		}else if(options.drowMode == 'C' || options.drowMode == 'U'){
-			board += drawBoardCUDetail(options, result);
-//			board += boardListHtml;
-		}else if(options.drowMode == 'R'){
-			board += drawBoardRDDetail(options, result);
-			board += boardListHtml;
-		}
-
-		$element[options.targetSavePoint].html(board);
+		
+		return returnResult;
 	};
 	
 	// 게시판 사용자 옵션별 화면 그리기
-	drawBoardList = function(options, result){
+	drowBoardList = function(options, result){
 		var board = "<div style='text-align:center;'>";
 
 		// 기본 게시판
-		board += drawBoad(options, result);
+		board += drowBoad(options, result);
 
 		// 페이징 옵션(S)
 		if(options.paging == "number"){
@@ -89,13 +86,11 @@
 		
 		board += "</div>";
 		
-		boardListHtml = board;
-		
 		return board;
 	};
 	
 	// 게시판 리스트
-	drawBoad = function(options, result){
+	drowBoad = function(options, result){
 		var rownum = options.currentPage == 1 ? result.listBoardCount + 1 : result.listBoardCount - options.blockCount * (options.currentPage - 1) + 1;
 		var listBoard = result.listBoard;
 
@@ -161,11 +156,11 @@
 		if (options.currentPage > options.blockPage) {
 			options.currentPage = 1;
 			toJsonOption = $.toJSON(options);
-			paging +=	"<a onclick='callAjaxBoard(" + toJsonOption + ");' style='cursor:pointer;'>처음</a>&nbsp;";
+			paging +=	"<a onclick='drowBoard(" + toJsonOption + ");' style='cursor:pointer;'>처음</a>&nbsp;";
 			
 			options.currentPage = startPage - 1;
 			toJsonOption = $.toJSON(options);
-			paging +=	"<a onclick='callAjaxBoard(" + toJsonOption + ");' style='cursor:pointer;'>이전</a>&nbsp;";
+			paging +=	"<a onclick='drowBoard(" + toJsonOption + ");' style='cursor:pointer;'>이전</a>&nbsp;";
 		}
 		for (var i = startPage; i <= endPage; i++) {
 			if (i > totalPage) {
@@ -176,17 +171,17 @@
 			} else {
 				options.currentPage = i;
 				toJsonOption = $.toJSON(options);
-				paging +=	"<a onclick='callAjaxBoard(" + toJsonOption + ");' style='cursor:pointer;'>" + i + "</a>&nbsp;";
+				paging +=	"<a onclick='drowBoard(" + toJsonOption + ");' style='cursor:pointer;'>" + i + "</a>&nbsp;";
 			}
 		}
 		if (totalPage - startPage >= options.blockPage) {
 			options.currentPage = endPage + 1;
 			toJsonOption = $.toJSON(options);
-			paging +=	"<a onclick='callAjaxBoard(" + toJsonOption + ");' style='cursor:pointer;'>다음</a>&nbsp;";
+			paging +=	"<a onclick='drowBoard(" + toJsonOption + ");' style='cursor:pointer;'>다음</a>&nbsp;";
 			
 			options.currentPage = totalPage;
 			toJsonOption = $.toJSON(options);
-			paging +=	"<a onclick='callAjaxBoard(" + toJsonOption + ");' style='cursor:pointer;'>끝</a>";
+			paging +=	"<a onclick='drowBoard(" + toJsonOption + ");' style='cursor:pointer;'>끝</a>";
 		}
 		paging +=		"</div>";
 		return paging;
@@ -195,13 +190,13 @@
 	/***********************************/
 	
 	// 게시판 세부화면(CRUD - C, U) 화면
-	drawBoardCUDetail = function(options, result){
+	drowBoardCUDetail = function(options, result){
 		var paramOptions =  $.toJSON(options);
 		var detailInfo = {	// create, update 를 같이 사용하기 위해 초기화 해준다.
 			title : ''
 			, contents : ''
 		};
-		if(result != ""){
+		if(result != ''){
 			detailInfo = result.retrieveMap;
 		}
 		
@@ -234,17 +229,11 @@
 		detail 	  += "	</form>";
 		detail 	  += "</div>";
 		
-		if(options.drowMode == "C"){
-			boardDetailHtml = "";
-		}else if(options.drowMode == "U"){
-			boardDetailHtml = detail;
-		}
-		
 		return detail;
 	};
 	
 	// 게시판 세부화면(CRUD - R, D) 화면
-	drawBoardRDDetail = function(options, result){
+	drowBoardRDDetail = function(options, result){
 		var detailInfo = result.retrieveMap;
 
 		var detail = "<div id='boardRDDiv" + options.targetSavePoint + "' style='padding: 0px 0 0 0;'>";
@@ -270,15 +259,13 @@
 		detail 	  += "	</form>";
 		detail 	  += "</div>";
 		
-		boardDetailHtml = detail;
-		
 		return detail;
 	};
 	
 	// 새글 작성
 	boardWrite = function(options){
 		options.drowMode = 'C';
-		drawBoard(options, '');
+		drowBoard(options);
 	};
 	
 	// 게시판 저장
@@ -292,7 +279,9 @@
 			dataType: "html",
 			success: function(data) {
 				alert("저장되었습니다.");
-				callAjaxBoard(options);
+				options.currentPage = 1;
+				options.drowMode = "L";
+				drowBoard(options);
 			},
 			error : function(){
 				alert("정보를 저장 하지 못했습니다.");
@@ -303,14 +292,23 @@
 	// 새글 취소
 	boardCancel = function(options){
 		options.currentPage = 1;
-		callAjaxBoard(options);
+		options.drowMode = "L";
+		drowBoard(options);
 	};
 	
 	// 게시판 읽기
 	boardRead = function(options, boardNo){
-		var url = options.boardName;
 		options.boardNo = boardNo;
-
+		options.drowMode = "R";
+		
+		drowBoard(options);
+	};
+	
+	// 세부정보 call
+	callBoardDetail = function(options){
+		var url = options.boardName;
+		var returnResult = "";
+		
 		$.ajax({
 			url: url + "/retrieve",
 			type: 'GET',
@@ -318,14 +316,15 @@
 			async : false,
 			datatype: 'json',
 			success : function(result){
-				options.drowMode = "R";
-				drawBoard(options, result);
+				returnResult = result;
 			},
 			error : function(){
 				alert("에러가 발생하였습니다.");
 			}
 			
 		});
+		
+		return returnResult;
 	};
 	
 	// 게시판 수정
@@ -339,7 +338,7 @@
 			datatype: 'json',
 			success : function(result){
 				options.drowMode = 'U';
-				drawBoard(options, result);
+				drowBoard(options);
 			},
 			error : function(){
 				alert("에러가 발생하였습니다.");
@@ -383,7 +382,8 @@
 			datatype: 'json',
 			success : function(result){
 				alert("삭제되었습니다.");
-				callAjaxBoard(options);
+				options.drowMode = "L";
+				drowBoard(options);
 			},
 			error : function(){
 				alert("에러가 발생하였습니다.");
